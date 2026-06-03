@@ -9,7 +9,7 @@ GET {{baseUrl}}/recados
 
 ### Buscar um recado por id
 # @name recadosFindOne
-GET {{baseUrl}}/recados/2
+GET {{baseUrl}}/recados/1
 
 ### Criar Recados
 # @name recadosPost
@@ -19,25 +19,21 @@ Content-Type: application/json
 {
     "texto": "Este eh um recado de teste 3",
     "de": "Ramon",
-    "para": "miguel",
-    "lido": false,
-    "data": "2026-05-30T14:31:14.493Z"
+    "para": "miguel"
 }
 
 ### Atualiza um recado
 # @name atualizarRecado
-PATCH {{baseUrl}}/recados/2
+PATCH {{baseUrl}}/recados/1
 Content-Type: application/json
 
 {
-    "texto": "Este eh um recado de teste modificado 233",
-    "de": "Jonatas",
-    "para": "miguel",
-    "lido": false,
-    "data": "2026-05-30T14:31:14.493Z"
+    "texto": "Este eh um recado de teste modificado 9090",
+    "lido": false
+
 }
 
 
 ### Deletar usuario
 # @name deletarTarefa
-DELETE {{baseUrl}}/recados/1
+DELETE {{baseUrl}}/recados/5

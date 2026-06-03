@@ -1,78 +1,81 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Recado } from './entities/recado.entity';
+import { CreateRecadoDto } from './dto/create-recado.dto';
+import { UpdateRecadoDto } from './dto/update-recado.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class RecadosService {
-  private lastId = 1;
-  private recados: Recado[] = [
-    {
-      id: 1,
-      texto: 'Este eh um recado de teste',
-      de: 'Jonatas',
-      para: 'miguel',
-      lido: false,
-      data: new Date(),
-    },
-  ];
+  constructor(
+    @InjectRepository(Recado)
+    private readonly _recadoRepository: Repository<Recado>,
+  ) {}
 
-  findAll() {
-    return this.recados;
+  async findAll() {
+    const recados = await this._recadoRepository.find();
+    return recados;
   }
 
-  findOne(id: string) {
-    const recados = this.recados.find((data) => data.id === +id);
+  async findOne(id: number) {
+    const recados = await this._recadoRepository.findOne({
+      where: {
+        id,
+      },
+    });
     if (!recados) {
       throw new HttpException('usuario nao encontrado', HttpStatus.NOT_FOUND);
     }
     return recados;
   }
 
-  create(body: any) {
-    this.lastId++;
-    const id = this.lastId;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const novoRecado = {
-      id,
-      ...body,
+  async create(createRecadoDto: CreateRecadoDto) {
+    const { texto, de, para } = createRecadoDto;
+
+    const novoRecado = await this._recadoRepository
+      .createQueryBuilder()
+      .insert()
+      .into(Recado)
+      .values({
+        texto,
+        de,
+        para,
+      })
+      .execute();
+
+    return this._recadoRepository.findOneBy({
+      id: novoRecado.identifiers[0].id as number,
+    });
+  }
+
+  async update(id: number, updateRecadoDto: UpdateRecadoDto) {
+    const partialUpdate = {
+      texto: updateRecadoDto?.texto,
+      lido: updateRecadoDto?.lido,
     };
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    this.recados.push(novoRecado);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return novoRecado;
+    const recadoExiste = await this._recadoRepository.update(id, partialUpdate);
+
+    if (recadoExiste.affected === 0) {
+      throw new NotFoundException('usuario nao encontrado');
+    }
+    return this._recadoRepository.findOneBy({
+      id,
+    });
   }
 
-  update(id: string, body: any) {
-    const recadoExisteIndex = this.recados.findIndex((data) => data.id === +id);
+  async remove(id: number) {
+    const recado = await this._recadoRepository.findOneBy({
+      id,
+    });
 
-    if (recadoExisteIndex < 0) {
-      throw new HttpException('usuario nao encontrado', HttpStatus.NOT_FOUND);
+    if (!recado) {
+      throw new HttpException('recado nao existe', HttpStatus.NOT_FOUND);
     }
-
-    if (recadoExisteIndex >= 0) {
-      const recadoExistente = this.recados[recadoExisteIndex];
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return, prettier/prettier
-      return this.recados[recadoExisteIndex] = {
-        ...recadoExistente,
-        ...body,
-        // eslint-disable-next-line prettier/prettier
-      };
-    }
-  }
-
-  remove(id: string) {
-    const deletarIndex = this.recados.findIndex((index) => index.id === +id);
-
-    if (deletarIndex < 0) {
-      throw new HttpException('usuario nao encontrado', HttpStatus.NOT_FOUND);
-    }
-
-    const result = this.recados[deletarIndex];
-
-    if (deletarIndex >= 0) {
-      this.recados.splice(deletarIndex, 1);
-    }
-
-    return { message: 'user deletado com sucesso', user: result };
+    return await this._recadoRepository.remove(recado);
   }
 }

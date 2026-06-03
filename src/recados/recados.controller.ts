@@ -1,7 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { RecadosService } from './recados.service';
+import { CreateRecadoDto } from './dto/create-recado.dto';
+import { UpdateRecadoDto } from './dto/update-recado.dto';
 
 @Controller('recados')
 export class Recados {
@@ -9,29 +10,29 @@ export class Recados {
 
   @HttpCode(HttpStatus.OK)
   @Get()
-  findAll() {
-    return this.recadosService.findAll();
+  async findAll() {
+    return await this.recadosService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.recadosService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return await this.recadosService.findOne(id);
   }
 
   @Post()
-  create(@Body() body: any) {
-    return this.recadosService.create(body)
+  async create(@Body() createBodyDTO: CreateRecadoDto) {
+    return await this.recadosService.create(createBodyDTO)
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() body: any) {
-    return this.recadosService.update(id, body);
+  async update(@Param('id', ParseIntPipe) id: number, @Body() UpdateRecadoDto: UpdateRecadoDto) {
+    return await this.recadosService.update(id, UpdateRecadoDto);
     
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string){
-    return this.recadosService.remove(id);
+  async remove(@Param('id', ParseIntPipe) id: number){
+    return await this.recadosService.remove(id);
   }
 
 
