@@ -3,7 +3,9 @@
 
 ### Buscar todos recados
 # @name recadosAll
-GET {{baseUrl}}/recados
+GET {{baseUrl}}/recados/
+?limit=1
+&offset=0
 
 ### 
 
@@ -17,19 +19,19 @@ POST {{baseUrl}}/recados
 Content-Type: application/json
 
 {
-    "texto": "Este eh um recado de teste 3",
-    "de": "Ramon",
-    "para": "miguel"
+    "texto": "Este eh um recado de para ramon",
+    "deId": 1,
+    "paraId": 10
 }
 
 ### Atualiza um recado
 # @name atualizarRecado
-PATCH {{baseUrl}}/recados/1
+PATCH {{baseUrl}}/recados/6
 Content-Type: application/json
 
 {
-    "texto": "Este eh um recado de teste modificado 9090",
-    "lido": false
+    "texto": "Este recado foi atualizado",
+    "lido": true
 
 }
 
@@ -37,3 +39,48 @@ Content-Type: application/json
 ### Deletar usuario
 # @name deletarTarefa
 DELETE {{baseUrl}}/recados/5
+
+
+#
+
+#
+
+#
+
+### Buscar todos PESSOAS
+# @name recadosAll
+GET {{baseUrl}}/pessoas/
+?limit=10
+&offset=0
+
+### 
+
+### Buscar um recado por id
+# @name recadosFindOne
+GET {{baseUrl}}/pessoas/2
+
+### Criar PESSOA
+# @name recadosPost
+POST {{baseUrl}}/pessoas
+Content-Type: application/json
+
+{
+    "nome": "Ramon",
+    "password": "12345",
+    "email": "ramon658@gmail.com"
+}
+
+### Atualiza um Pessoa
+# @name atualizarRecado
+PATCH {{baseUrl}}/pessoas/1
+Content-Type: application/json
+
+{
+    "email": "ramon@gmail.com",
+    "nome": "Ramon silva"
+}
+
+
+### Deletar usuario
+# @name deletarPessoa
+DELETE {{baseUrl}}/pessoas/2
